@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="Suite basico carga" verbose="1">
+
+    <parameter name="tester-name" value="Quique" />
+
+    <!-- Demo de precedencia de anotaciones -->
+    <test name="Demo Precedencia">
+        <classes>
+            <class name="tudai.tdv.test.testng.DemoPrecedencia" />
+        </classes>
+    </test>
+
+    <!-- Test Persona: edad + excepcion -->
+    <test name="Test Persona">
+        <classes>
+            <class name="tudai.tdv.test.testng.TestPersona">
+                <methods>
+                    <include name="testEdadBienCalculada" />
+                    <include name="testNoPermitirEdadesNegativas" />
+                </methods>
+            </class>
+        </classes>
+    </test>
+
+    <!-- Test Persona con parametros pasados desde XML -->
+    <test name="Test Persona con parametros">
+        <parameter name="nombre" value="Luis" />
+        <parameter name="dni"    value="12.345.678" />
+        <parameter name="fnac"   value="1990-2-18" />
+        <classes>
+            <class name="tudai.tdv.test.testng.TestPersona">
+                <methods>
+                    <include name="testConParametros" />
+                </methods>
+            </class>
+        </classes>
+    </test>
+
+</suite>
