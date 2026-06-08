@@ -2,7 +2,7 @@
 <!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
 <suite name="Suite basico carga" verbose="1">
 
-    <parameter name="tester-name" value="Quique" />
+    <parameter name="tester-name" value="Nahue" />
 
     <!-- Demo de precedencia de anotaciones -->
     <test name="Demo Precedencia">
@@ -25,7 +25,7 @@
 
     <!-- Test Persona con parametros pasados desde XML -->
     <test name="Test Persona con parametros">
-        <parameter name="nombre" value="Luis" />
+        <parameter name="ASDnombre" value="Luis" />
         <parameter name="dni"    value="12.345.678" />
         <parameter name="fnac"   value="1990-2-18" />
         <classes>

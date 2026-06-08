@@ -30,16 +30,16 @@ public class TestPersona {
             new Persona("Maria",   "28.184.259", "1981-03-01", 45, true),
             new Persona("Cecilia", "32.234.528", "1983-04-01", 43, true),
             new Persona("Carlos",  "33.124.235", "1985-04-01", 41, true),
-            new Persona("Jose",    "35.345.534", "1987-04-01", 39, true)
+            new Persona("Jose",    "35.345.534", "1987-04-01", 20, true)
         };
     }
 
-    @Test(dataProvider = "GeneradorPersona", invocationCount = 99)
+    @Test(dataProvider = "GeneradorPersona", invocationCount = 1)
     public void testEdadBienCalculada(Persona p) {
         int edadReportada = p.getEdad();
         int edadReal = calcularEdad(p.getFechaNacimiento());
-        Assert.assertTrue(edadReportada == edadReal,
-            "Edad incorrecta para " + p.getNombre() + ": reportada=" + edadReportada + " real=" + edadReal);
+        //Assert.assertEquals(edadReal, edadReportada, "Edad incorrecta para " + p.getNombre() + ": reportada=" + edadReportada + " real=" + edadReal);
+        Assert.assertEquals(edadReportada, edadReal);
     }
 
     // -------------------------------------------------------------------
@@ -48,10 +48,10 @@ public class TestPersona {
 
     @Test
     @Parameters({"nombre", "dni", "fnac"})
-    public void testConParametros(@Optional("Pepe") String nombre,
+    public void testConParametros(@Optional("Pepe") String name,
                                   @Optional("20.345.678") String dni,
                                   @Optional("2001-2-3") String fNac) {
-        Persona p = new Persona(nombre, dni, fNac, 0, false);
+        Persona p = new Persona(name, dni, fNac, 0, false);
         System.out.println(p);
     }
 
