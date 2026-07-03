@@ -30,7 +30,7 @@ public class TestPersona {
             new Persona("Maria",   "28.184.259", "1981-03-01", 45, true),
             new Persona("Cecilia", "32.234.528", "1983-04-01", 43, true),
             new Persona("Carlos",  "33.124.235", "1985-04-01", 41, true),
-            new Persona("Jose",    "35.345.534", "1987-04-01", 20, true)
+            new Persona("Jose",    "35.345.534", "1987-04-01", 39, true)
         };
     }
 
@@ -60,7 +60,7 @@ public class TestPersona {
     // -------------------------------------------------------------------
 
     @Test(expectedExceptions = { EdadNopermitidaException.class })
-    public void testNoPermitirEdadesNegativas() throws EdadNopermitidaException {
+    public void testNoPermitirEdadesNegativas() {
         Persona p = new Persona("Anibal", "26.150.235", "1979-01-01", 44, true);
         p.setEdad(-1);
     }

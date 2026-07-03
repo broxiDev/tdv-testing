@@ -1,0 +1,392 @@
+openapi: "3.0.3"
+info:
+  title: GitHub REST API - TDV TP3
+  description: >
+    Documentación de los endpoints utilizados para el Trabajo Práctico 3 de
+    Testing y Verificación de Software. Autenticación vía Bearer Token.
+  version: 1.0.0
+  contact:
+    name: GitHub Docs
+    url: https://docs.github.com/en/rest
+
+servers:
+  - url: https://api.github.com
+    description: Servidor oficial de GitHub REST API
+
+paths:
+  /user:
+    get:
+      summary: Obtener usuario autenticado
+      description: Verifica que el token de autenticación es válido.
+      operationId: getAuthenticatedUser
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Usuario autenticado correctamente
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "401":
+          description: Token inválido o ausente
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /user/repos:
+    get:
+      summary: Listar repositorios del usuario autenticado
+      description: |
+        Obtiene todos los repositorios públicos y privados del usuario autenticado.
+        Muestra nombre, visibilidad y URL.
+      operationId: listRepos
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: per_page
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 30
+          description: Cantidad de resultados por página
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 1
+          description: Número de página
+      responses:
+        "200":
+          description: Lista de repositorios
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Repository"
+        "401":
+          description: Token inválido
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+    post:
+      summary: Crear un nuevo repositorio
+      description: Crea un repositorio para el usuario autenticado.
+      operationId: createRepo
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateRepoRequest"
+      responses:
+        "201":
+          description: Repositorio creado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Repository"
+        "422":
+          description: Error de validación (ej. nombre duplicado)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /repos/{owner}/{repo}/pulls:
+    post:
+      summary: Crear un Pull Request
+      description: Crea un Pull Request entre una rama nueva y main.
+      operationId: createPullRequest
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: owner
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Dueño del repositorio
+        - name: repo
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Nombre del repositorio
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreatePullRequestRequest"
+      responses:
+        "201":
+          description: Pull Request creado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PullRequest"
+        "422":
+          description: Error de validación
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /repos/{owner}/{repo}/issues/{issue_number}/comments:
+    post:
+      summary: Comentar en un Pull Request
+      description: Agrega un comentario textual a un Pull Request existente.
+      operationId: createPullRequestComment
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: owner
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Dueño del repositorio
+        - name: repo
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Nombre del repositorio
+        - name: issue_number
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: Número del Pull Request (issue)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateCommentRequest"
+      responses:
+        "201":
+          description: Comentario creado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Comment"
+        "404":
+          description: PR no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Token personal de GitHub (classic) con permisos repo y user
+
+  schemas:
+    User:
+      type: object
+      properties:
+        login:
+          type: string
+          example: octocat
+        id:
+          type: integer
+          example: 1
+        node_id:
+          type: string
+        avatar_url:
+          type: string
+          format: uri
+        url:
+          type: string
+          format: uri
+        html_url:
+          type: string
+          format: uri
+        name:
+          type: string
+          example: monalisa octocat
+        email:
+          type: string
+          example: octocat@github.com
+
+    Repository:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+          example: tdv-tp3-test
+        full_name:
+          type: string
+          example: octocat/tdv-tp3-test
+        private:
+          type: boolean
+          example: false
+        html_url:
+          type: string
+          format: uri
+          example: https://github.com/octocat/tdv-tp3-test
+        description:
+          type: string
+          nullable: true
+        fork:
+          type: boolean
+        url:
+          type: string
+          format: uri
+        visibility:
+          type: string
+          enum: [public, private]
+          example: public
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        pushed_at:
+          type: string
+          format: date-time
+
+    CreateRepoRequest:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          description: Nombre del repositorio
+          example: tdv-tp3-test
+        description:
+          type: string
+          description: Descripción del repositorio
+          example: Repositorio de prueba para TDV TP3
+        private:
+          type: boolean
+          description: Visibilidad del repositorio
+          example: false
+        auto_init:
+          type: boolean
+          description: Inicializar con README
+          example: true
+
+    CreatePullRequestRequest:
+      type: object
+      required:
+        - title
+        - head
+        - base
+      properties:
+        title:
+          type: string
+          description: Título del Pull Request
+          example: "feat: agregar nueva funcionalidad"
+        head:
+          type: string
+          description: Nombre de la rama origen
+          example: feature-branch
+        base:
+          type: string
+          description: Rama destino
+          example: main
+        body:
+          type: string
+          description: Descripción del Pull Request
+          example: Este PR agrega la funcionalidad X
+
+    PullRequest:
+      type: object
+      properties:
+        id:
+          type: integer
+        number:
+          type: integer
+        state:
+          type: string
+          example: open
+        title:
+          type: string
+        body:
+          type: string
+          nullable: true
+        html_url:
+          type: string
+          format: uri
+        head:
+          type: object
+          properties:
+            ref:
+              type: string
+            sha:
+              type: string
+        base:
+          type: object
+          properties:
+            ref:
+              type: string
+            sha:
+              type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    CreateCommentRequest:
+      type: object
+      required:
+        - body
+      properties:
+        body:
+          type: string
+          description: Contenido del comentario
+          example: Revisado y aprobado.
+
+    Comment:
+      type: object
+      properties:
+        id:
+          type: integer
+        body:
+          type: string
+        user:
+          $ref: "#/components/schemas/User"
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        html_url:
+          type: string
+          format: uri
+
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+        documentation_url:
+          type: string
+          format: uri
+        status:
+          type: string
+
+security:
+  - bearerAuth: []
